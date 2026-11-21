@@ -133,6 +133,17 @@ public class MainActivity extends Activity {
                 Uri.parse("package:" + getPackageName())));
     }
 
+    /**
+     * Activity ini hanya perantara. Begitu tidak terlihat lagi (dialog izin ditutup,
+     * pindah ke aplikasi lain, dsb.) langsung ditutup, supaya ketukan ikon berikutnya
+     * selalu memulai yang baru, bukan menampilkan dialog lama yang tersisa.
+     */
+    @Override
+    protected void onStop() {
+        super.onStop();
+        finish();
+    }
+
     @Override
     protected void onDestroy() {
         handler.removeCallbacksAndMessages(null);

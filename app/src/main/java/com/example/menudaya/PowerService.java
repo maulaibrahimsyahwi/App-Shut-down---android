@@ -20,7 +20,8 @@ import android.view.accessibility.AccessibilityEvent;
  */
 public class PowerService extends AccessibilityService {
 
-    private static final String ID_SALURAN = "menu_daya";
+    private static final String ID_SALURAN_LAMA = "menu_daya";
+    private static final String ID_SALURAN = "menu_daya_senyap";
     private static final int ID_NOTIFIKASI = 1;
 
     /** Diisi saat service aktif; null jika belum diaktifkan di Pengaturan. */
@@ -37,9 +38,12 @@ public class PowerService extends AccessibilityService {
     private void jadikanForeground() {
         try {
             NotificationManager nm = getSystemService(NotificationManager.class);
+            // Saluran lama (importance LOW) tidak bisa diturunkan oleh aplikasi, jadi diganti baru.
+            nm.deleteNotificationChannel(ID_SALURAN_LAMA);
             NotificationChannel saluran = new NotificationChannel(
-                    ID_SALURAN, "Menu Daya", NotificationManager.IMPORTANCE_LOW);
+                    ID_SALURAN, "Menu Daya (senyap)", NotificationManager.IMPORTANCE_MIN);
             saluran.setShowBadge(false);
+            saluran.setLockscreenVisibility(Notification.VISIBILITY_SECRET);
             nm.createNotificationChannel(saluran);
 
             // Ketuk notifikasi = sama dengan mengetuk ikon aplikasi.
@@ -51,7 +55,9 @@ public class PowerService extends AccessibilityService {
                     .setContentTitle("Menu Daya siap")
                     .setContentText("Ketuk untuk menampilkan menu Matikan / Mulai ulang")
                     .setContentIntent(ketuk)
-                    .setOngoing(true)
+                    .setCategory(Notification.CATEGORY_SERVICE)
+                    .setVisibility(Notification.VISIBILITY_SECRET)
+                    .setShowWhen(false)
                     .build();
 
             if (Build.VERSION.SDK_INT >= 34) {
