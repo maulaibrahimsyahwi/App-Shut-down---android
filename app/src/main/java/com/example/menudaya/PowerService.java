@@ -18,6 +18,7 @@ public class PowerService extends AccessibilityService {
     protected void onServiceConnected() {
         super.onServiceConnected();
         instance = this;
+        Jejak.catat(this, "layanan TERSAMBUNG");
     }
 
     /**
@@ -37,18 +38,20 @@ public class PowerService extends AccessibilityService {
 
     @Override
     public void onInterrupt() {
-        // Tidak dipakai.
+        Jejak.catat(this, "layanan diinterupsi (onInterrupt)");
     }
 
     @Override
     public boolean onUnbind(Intent intent) {
         instance = null;
+        Jejak.catat(this, "layanan PUTUS (onUnbind)");
         return super.onUnbind(intent);
     }
 
     @Override
     public void onDestroy() {
         instance = null;
+        Jejak.catat(this, "layanan DIHANCURKAN (onDestroy)");
         super.onDestroy();
     }
 }
