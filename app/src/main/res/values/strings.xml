@@ -4,5 +4,6 @@
     <string name="service_label">Menu Daya</string>
     <string name="service_description">Dipakai hanya untuk menampilkan menu daya (Matikan / Mulai ulang) saat ikon aplikasi diketuk. Aplikasi ini tidak membaca atau merekam isi layar.</string>
     <string name="toast_aktifkan_service">Aktifkan \"Menu Daya\" di Aksesibilitas, lalu ketuk ikon lagi.</string>
+    <string name="toast_menu_ditolak">Sistem tidak menjalankan menu daya. Coba matikan lalu nyalakan lagi layanan \"Menu Daya\" di Aksesibilitas.</string>
     <string name="toast_service_belum_tersambung">Layanan belum tersambung. Matikan lalu nyalakan lagi \"Menu Daya\" di Aksesibilitas, lalu ketuk ikon lagi.</string>
 </resources>

@@ -10,10 +10,10 @@ import android.provider.Settings;
 import android.widget.Toast;
 
 /**
- * Tanpa layout. Dibuka -> langsung minta menu daya -> langsung tutup.
+ * Tanpa layout. Dibuka -> langsung minta menu daya -> tutup sendiri.
  *
  * Tiga keadaan:
- * 1. Service tersambung            -> tampilkan menu daya.
+ * 1. Service tersambung            -> tampilkan menu daya seketika.
  * 2. Service aktif di Pengaturan, tapi belum tersambung (sering di Xiaomi)
  *                                  -> tunggu sebentar, lalu beri petunjuk.
  * 3. Service belum diaktifkan      -> arahkan ke Pengaturan Aksesibilitas.
@@ -22,6 +22,7 @@ public class MainActivity extends Activity {
 
     private static final int MAKS_PERCOBAAN = 8;
     private static final long JEDA_MS = 400;
+    private static final long TAHAN_SEBELUM_TUTUP_MS = 1000;
 
     private final Handler handler = new Handler(Looper.getMainLooper());
     private int percobaan = 0;
@@ -30,9 +31,9 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (PowerService.instance != null) {
-            PowerService.instance.openPowerMenu();
-            finish();
+        PowerService service = PowerService.instance;
+        if (service != null) {
+            jalankan(service);
         } else if (layananAktifDiPengaturan()) {
             // Aktif tapi belum tersambung: beri waktu sistem untuk menyambungkannya.
             coba();
@@ -43,11 +44,23 @@ public class MainActivity extends Activity {
         }
     }
 
+    /** Kirim perintah menu daya seketika, lalu tahan activity sebentar sebelum menutup. */
+    private void jalankan(PowerService service) {
+        try {
+            boolean diterima = service.bukaMenuDaya();
+            if (!diterima) {
+                Toast.makeText(this, R.string.toast_menu_ditolak, Toast.LENGTH_LONG).show();
+            }
+        } catch (Throwable t) {
+            Toast.makeText(this, "Gagal: " + t, Toast.LENGTH_LONG).show();
+        }
+        handler.postDelayed(this::finish, TAHAN_SEBELUM_TUTUP_MS);
+    }
+
     private void coba() {
         PowerService service = PowerService.instance;
         if (service != null) {
-            service.openPowerMenu();
-            finish();
+            jalankan(service);
             return;
         }
         if (++percobaan < MAKS_PERCOBAAN) {
