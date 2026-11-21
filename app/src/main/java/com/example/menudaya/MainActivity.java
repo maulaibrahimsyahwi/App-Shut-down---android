@@ -1,10 +1,13 @@
 package com.example.menudaya;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -28,6 +31,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mintaIzinNotifikasi();
 
         PowerService service = PowerService.instance;
         boolean aktif = layananAktifDiPengaturan();
@@ -58,6 +62,15 @@ public class MainActivity extends Activity {
             handler.postDelayed(this::finish, TAHAN_SEBELUM_TUTUP_MS);
         } else {
             tampilkanStatus();
+        }
+    }
+
+    /** Android 13+ butuh izin agar notifikasi "Menu Daya siap" bisa tampil. */
+    private void mintaIzinNotifikasi() {
+        if (Build.VERSION.SDK_INT >= 33
+                && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1);
         }
     }
 
